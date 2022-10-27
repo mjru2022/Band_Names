@@ -6,6 +6,8 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:provider/provider.dart';
 
 import '../models/band.dart';
+//import 'dart:async';
+//import 'package:http/http.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,7 +28,6 @@ class _HomePageState extends State<HomePage> {
     final socketService = Provider.of<SocketService>(context, listen: false);
     socketService.socket.on("active-bands", _handleActive);
 
-    // TODO: implement initState
     super.initState();
   }
 
@@ -156,10 +157,15 @@ class _HomePageState extends State<HomePage> {
 
   Widget _showGraphic() {
     Map<String, double> dataMap = new Map();
-    // dataMap.putIfAbsent('Flutter', () => 5);
+    //dataMap.putIfAbsent('Flutter', () => 5);
+
+    // ignore: avoid_function_literals_in_foreach_calls
     bands.forEach((band) {
       dataMap.putIfAbsent(band.nombre!, () => band.votes!.toDouble());
     });
+    // dataMap.putIfAbsent('Flutter', () => 5);
+    // ignore: avoid_function_literals_in_foreach_calls
+
     final List<Color> colorList = [
       Colors.blue[50]!,
       Colors.blue[200]!,
@@ -168,37 +174,39 @@ class _HomePageState extends State<HomePage> {
       Colors.yellow[50]!,
       Colors.yellow[200]!,
     ];
-    return Container(
-        width: double.infinity,
-        height: 200,
-        child: PieChart(
-          dataMap: dataMap,
-          animationDuration: Duration(milliseconds: 800),
-          chartLegendSpacing: 32,
-          chartRadius: MediaQuery.of(context).size.width / 3.2,
-          colorList: colorList,
-          initialAngleInDegree: 0,
-          chartType: ChartType.ring,
-          ringStrokeWidth: 32,
-          centerText: "HYBRID",
-          legendOptions: LegendOptions(
-            showLegendsInRow: false,
-            legendPosition: LegendPosition.right,
-            showLegends: true,
-            legendShape: BoxShape.circle,
-            legendTextStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          chartValuesOptions: ChartValuesOptions(
-            showChartValueBackground: true,
-            showChartValues: true,
-            showChartValuesInPercentage: false,
-            showChartValuesOutside: false,
-            decimalPlaces: 1,
-          ),
-          // gradientList: ---To add gradient colors---
-          // emptyColorGradient: ---Empty Color gradient---
-        ));
+    return dataMap.isNotEmpty
+        ? Container(
+            width: double.infinity,
+            height: 200,
+            child: PieChart(
+              dataMap: dataMap,
+              animationDuration: const Duration(milliseconds: 800),
+              chartLegendSpacing: 32,
+              chartRadius: MediaQuery.of(context).size.width / 3.2,
+              colorList: colorList,
+              initialAngleInDegree: 0,
+              chartType: ChartType.ring,
+              ringStrokeWidth: 32,
+              centerText: "HYBRID",
+              legendOptions: const LegendOptions(
+                showLegendsInRow: false,
+                legendPosition: LegendPosition.right,
+                showLegends: true,
+                legendShape: BoxShape.circle,
+                legendTextStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              chartValuesOptions: const ChartValuesOptions(
+                showChartValueBackground: true,
+                showChartValues: true,
+                showChartValuesInPercentage: false,
+                showChartValuesOutside: false,
+                decimalPlaces: 1,
+              ),
+              // gradientList: ---To add gradient colors---
+              // emp ) : LinearProgressIndicator(); tyColorGradient: ---Empty Color gradient---
+            ))
+        : LinearProgressIndicator();
   }
 }
